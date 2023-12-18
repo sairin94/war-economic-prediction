@@ -9,6 +9,17 @@ def load_data(filename, skip_end_rows = 2):
     df = df[:-skip_end_rows]
     return df
 
+def clean_data(df):
+    result_df = df.copy()
+    result_df.set_index('Quarter', inplace=True)
+    result_df.columns = result_df.columns.str.strip()
+    for col in result_df.columns:
+        if result_df[col].dtype == 'object':
+            result_df[col] = pd.to_numeric(result_df[col], errors='coerce')
+    result_df.bfill(axis=0, inplace=True)
+    result_df.ffill(axis=0, inplace=True)
+    return result_df
+
 def preprocess_data(df):
     result_df = df.copy()
     result_df.set_index('Quarter', inplace=True)
@@ -18,19 +29,15 @@ def preprocess_data(df):
             result_df[col] = pd.to_numeric(result_df[col], errors='coerce')
 
     numeric_cols = result_df.select_dtypes(include=['float64', 'int64']).columns
-
-    # Apply StandardScaler
     scaler = StandardScaler()
     result_df[numeric_cols] = scaler.fit_transform(result_df[numeric_cols])
-
-    #Imputing missing values
     result_df.bfill(axis=0, inplace=True)
     result_df.ffill(axis=0, inplace=True)
     
     return result_df, scaler
 
 def train_data_split(economic_data, n_future, n_past):
-    test_data_position = 4 # GDP position
+    test_data_position = 4 
     trainX, trainY = [], []
     for i in range(n_past, len(economic_data) - n_future + 1):
         trainX.append(economic_data.iloc[i - n_past:i, 0 : economic_data.shape[1]].values)

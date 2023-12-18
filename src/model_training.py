@@ -22,6 +22,7 @@ def set_random_seed(seed_value = 42):
 
 
 def define_model_lstm(num_nodes, learning_rate, drop_out, activation, init_mode, optimizer, window, features):
+    set_random_seed()
     optimizer_class = {'Adam': Adam, 'SGD': SGD}.get(optimizer)
     model = Sequential()
     model.add(LSTM(num_nodes, activation=activation, kernel_initializer=init_mode,
@@ -48,6 +49,7 @@ def define_model_gru(num_nodes, learning_rate, drop_out, activation, init_mode, 
 
 
 def define_model_cnn(num_nodes, learning_rate, drop_out, activation, init_mode, optimizer,kernel_size, window, features):
+    set_random_seed()
     optimizer_class = {'Adam': Adam, 'SGD': SGD}.get(optimizer)
     model = Sequential()
     model.add(Conv1D(filters=num_nodes, kernel_size=kernel_size, activation=activation, kernel_initializer=init_mode,

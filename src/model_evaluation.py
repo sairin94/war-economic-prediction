@@ -27,7 +27,7 @@ class Info:
         self.params = None
         self.loss = None
 
-def score_model(params, X_train, y_train , model_type):
+def score_model(params, X_train, y_train, model_type):
     info = Info()
     num_nodes=params['num_nodes']
     learning_rate=params['learning_rate']
@@ -36,12 +36,12 @@ def score_model(params, X_train, y_train , model_type):
     init_mode=params['init_mode']
     optimizer=params['optimizer']
     batch_size=params['batch_size']
-    kernel_size=params['kernel_size']
     window=16
     features=12
     if model_type=='LSTM':
         model = define_model_lstm(num_nodes, learning_rate, drop_out, activation, init_mode, optimizer, window,features)
     elif model_type=='CNN':
+        kernel_size=params['kernel_size']
         model = define_model_cnn(num_nodes, learning_rate, drop_out, activation, init_mode, optimizer, kernel_size, window,features)
     else:
          model = define_model_gru(num_nodes, learning_rate, drop_out, activation, init_mode, optimizer, window,features)
@@ -93,15 +93,13 @@ def war_no_war_plot(test_results_war_df, test_results_no_war_df, test_results_al
     dates = pd.date_range(start='2015-12-31', periods=num_samples, freq='Q')
     plt.figure(figsize=(12, 6))
     plt.plot(dates, test_results_war_df['Predictions'], label='GDP Predictions Due To US Involvement In Wars', color='red', marker='o')
-    # plt.plot(dates, test_results_no_war_df['Predictions'], label='No War Predictions', color='blue', marker='x')
-    # plt.plot(dates, test_results_always_war_df['Predictions'], label='Always War Predictions', color='orange', marker='D')
+    plt.plot(dates, test_results_no_war_df['Predictions'], label='No War Predictions', color='blue', marker='x')
+    plt.plot(dates, test_results_always_war_df['Predictions'], label='Always War Predictions', color='orange', marker='D')
     start_date = pd.Timestamp('2015-12-31')
     for war, (start, end) in war_periods.items():
         start, end = pd.Timestamp(start), pd.Timestamp(end)
         if end > start_date:
             plt.axvspan(max(start, start_date), end, color='lightcoral', alpha=0.3)
-
-    # plt.title('Predicted Values: War vs No War vs Always War')
     plt.title('Prediction Of GDP During Wars')
     plt.xlabel('Date')
     plt.ylabel('Predicted Value')
